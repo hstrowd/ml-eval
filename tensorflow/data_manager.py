@@ -12,6 +12,7 @@ import csv
 
 VERBOSE = False
 
+# Stats for the first 50 running backs, sorted by name alphabetically, for the 2015 season.
 DATA_SOURCE_URLS = [
     "https://fantasydata.com/nfl-stats/nfl-fantasy-football-stats.aspx?fs=0&stype=0&sn=1&scope=1&w=0&ew=0&s=&t=0&p=3&st=Name&d=0&ls=Name&live=false&pid=true&minsnaps=4",
     "https://fantasydata.com/nfl-stats/nfl-fantasy-football-stats.aspx?fs=0&stype=0&sn=1&scope=1&w=1&ew=1&s=&t=0&p=3&st=Name&d=0&ls=Name&live=false&pid=true&minsnaps=4",
@@ -34,6 +35,7 @@ COLUMN_NAMES = ["Rank","ID","Name","Position","Week","Team","Opp","Att","RushYds
 RAW_DATA_CSV_PATH = "./raw_data.csv"
 TRAINING_DATA_CSV_PATH = "./model_data.train.csv"
 TESTING_DATA_CSV_PATH = "./model_data.test.csv"
+
 
 def print_usage():
     print("""
@@ -148,6 +150,13 @@ def process_data():
                 avg_yards,
                 avg_tds,
                 avg_points,
+                one_week_ago_stats['Att'],
+                one_week_ago_stats['RushYds'],
+                one_week_ago_stats['RushTD'],
+                one_week_ago_stats['Targets'],
+                one_week_ago_stats['PassYds'],
+                one_week_ago_stats['PassTD'],
+                one_week_ago_stats['FantasyPoints'],
                 performance
             ]
 
@@ -161,14 +170,14 @@ def process_data():
     if VERBOSE: print("Writing " + str(len(model_training_data)) + " training records to " + TRAINING_DATA_CSV_PATH)
     with open(TRAINING_DATA_CSV_PATH, "w") as csvfile:
         csvwriter = csv.writer(csvfile, dialect=csv.Dialect.delimiter)
-        csvwriter.writerow([len(model_training_data), 4, "0-5", "5-10", "10-15", "15-20", "20+"])
+        csvwriter.writerow([len(model_training_data), 11, "0-5", "5-10", "10-15", "15-20", "20+"])
         for row in model_training_data:
             csvwriter.writerow(row)
 
     if VERBOSE: print("Writing " + str(len(model_testing_data)) + " testing records to " + TESTING_DATA_CSV_PATH)
     with open(TESTING_DATA_CSV_PATH, "w") as csvfile:
         csvwriter = csv.writer(csvfile, dialect=csv.Dialect.delimiter)
-        csvwriter.writerow([len(model_testing_data), 4, "0-5", "5-10", "10-15", "15-20", "20+"])
+        csvwriter.writerow([len(model_testing_data), 11, "0-5", "5-10", "10-15", "15-20", "20+"])
         for row in model_testing_data:
             csvwriter.writerow(row)
 
@@ -208,6 +217,7 @@ def main(argv=None):
         print("Processing data.")
         process_data()
         if VERBOSE: print("Finished processing data.")
+
 
 if __name__ == "__main__":
    main(sys.argv[1:])
